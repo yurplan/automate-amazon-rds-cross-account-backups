@@ -277,4 +277,6 @@ Resources:
         RoleArn: !GetAtt rIAMRole.Arn
         Id: "TargetVersion1"
       EventBusName: "default"
-
+Outputs:
+  BackupIAMRole:
+    Value: !Ref rAWSBackupIAMRole
