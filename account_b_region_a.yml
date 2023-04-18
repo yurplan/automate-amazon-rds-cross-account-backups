@@ -141,7 +141,8 @@ Resources:
                         "kms:DescribeKey",
                         "kms:CreateAlias",
                         "kms:DeleteAlias",
-                        "kms:CreateGrant"
+                        "kms:CreateGrant",
+                        "kms:GetKeyPolicy"
                       ],
                       "Resource": "*"
                   },
