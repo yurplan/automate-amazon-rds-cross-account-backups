@@ -44,6 +44,29 @@ Parameters:
   pKeyAdminIdentity:
     Type: String
     Description: 'The principal element of the KMS key administrator. For example, "root", "user/ExampleAdminUser" or "role/ExampleAdminRole"'
+  pBackupVaultMinRetention:
+    Type: Number
+    Description: 'TODO'
+    Default: 0
+  pBackupVaultMaxRetention:
+    Type: Number
+    Description: 'TODO'
+    Default: 0
+  pBackupVaultGracePeriod:
+    Type: Number
+    Description: 'TODO'
+    Default: 0
+
+Conditions:
+  cEnableVaultLock: !Or
+    - !Not
+      - !Equals ['0', !Ref pBackupVaultMinRetention]
+    - !Not
+      - !Equals ['0', !Ref pBackupVaultMaxRetention]
+    - !Not
+      - !Equals ['0', !Ref pBackupVaultGracePeriod]
+  cEnableVaultLockCompliance: !Not
+      - !Equals ['0', !Ref pBackupVaultGracePeriod]
 
 Resources:
 # KMS Customer Managed Key (CMK) and AWS Backup Vault
@@ -127,3 +150,13 @@ Resources:
           }
       BackupVaultName: !Ref pBackupVaultName
       EncryptionKeyArn: !GetAtt rKMSCMK.Arn
+      LockConfiguration:
+        !If
+        - cEnableVaultLock
+        - ChangeableForDays: !Ref pBackupVaultGracePeriod
+          MinRetentionDays: !Ref pBackupVaultMinRetention
+          MaxRetentionDays: !If
+          - cEnableVaultLockCompliance
+          - !Ref pBackupVaultMaxRetention
+          - AWS::NoValue
+        - Ref: AWS::NoValue
